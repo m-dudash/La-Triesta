@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header :: head('Môj profil')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5" style="max-width: 960px;">
+    <style>
+        :root { --red:#d7263d; --green:#1b9a59; --cream:#fff7eb; }
+        .layout {
+            display: grid;
+            grid-template-columns: 500px 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 992px) { .layout { grid-template-columns: 1fr; } }
+        .panel {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.08);
+            background: #fff;
+            padding: 40px;
+        }
+        .headline {
+            background: linear-gradient(135deg, rgba(215,38,61,0.12), rgba(27,154,89,0.18));
+            border-radius: 16px;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+        }
+        .flag-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+        .info-row { display:flex; gap:12px; padding:12px 0; border-bottom:1px solid #f1f1f1; }
+        .info-row:last-child { border-bottom:none; }
+        .info-label { width:160px; font-weight:700; color:#444; }
+        .badge-soft { background: rgba(27,154,89,0.12); color:#1b9a59; border-radius:12px; padding:6px 12px; font-weight:600; }
+        .meta {
+            display:flex; flex-wrap:wrap; gap:8px;
+        }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <div>
+            <h2 class="mb-1">Môj profil</h2>
+            <small class="text-muted">Osobné údaje a kontakty</small>
+        </div>
+        <a class="btn btn-outline-secondary" href="/">Späť</a>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div class="layout">
+        <div class="panel">
+            <div class="headline mb-3" style="display:flex; align-items:center; gap:8px;">
+                <img th:if="${user.avatarUrl}" th:src="${user.avatarUrl}" alt="Avatar"
+                     style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
+                <span th:if="${user.avatarUrl == null}" style="display:inline-flex; gap:4px; align-items:center;">
+            <span style="width:18px; height:18px; background:#009246; border-radius:50%; display:inline-block;"></span>
+            <span style="width:18px; height:18px; background:#fff; border:1px solid #ccc; border-radius:50%;"></span>
+            <span style="width:18px; height:18px; background:#ce2b37; border-radius:50%;"></span>
+        </span>
+                <span class="h5">La Triesta profil</span>
+            </div>
+
+            <div class="info-row">
+                <div class="info-label">Používateľské meno</div>
+                <div th:text="${user.username}"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Email</div>
+                <div th:text="${user.email}"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Adresa</div>
+                <div th:text="${user.address}"></div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">Telefón</div>
+                <div th:text="${user.phone}"></div>
+            </div>
+            <div class="mt-3">
+                <a class="btn btn-primary" href="/profile/edit">Upraviť profil</a>
+            </div>
+        </div>
+
+        <div class="panel" style="background:var(--cream); border:1px solid #f2e9dc;">
+            <h5 class="fw-bold mb-3"><i class="bi bi-info-circle"></i> Tipy pre doručenie</h5>
+            <ul class="mb-3 text-muted">
+                <li>Uistite sa, že adresa obsahuje poschodie/dvere pre kuriéra.</li>
+                <li>Telefón majte pri sebe pre rýchlu koordináciu.</li>
+            </ul>
+            <div class="d-flex flex-column gap-2">
+                <div class="badge-soft"><i class="bi bi-shield-check"></i> Údaje sú použité len na doručenie</div>
+                <div class="badge-soft"><i class="bi bi-clock-history"></i> Upravte kedykoľvek</div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

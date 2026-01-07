@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Objednávka úspešná')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red:#d7263d; --green:#1b9a59; --cream:#fff7eb; }
+        .celebrate {
+            border:none;
+            border-radius:20px;
+            background: linear-gradient(135deg, rgba(27,154,89,0.12), rgba(215,38,61,0.10)), #fff;
+            box-shadow:0 18px 48px rgba(0,0,0,0.08);
+            padding: 28px;
+            text-align:center;
+            position: relative;
+            overflow: hidden;
+        }
+        .confetti {
+            position:absolute; inset:0; pointer-events:none;
+            background-image:
+                    radial-gradient(#d7263d 2px, transparent 2px),
+                    radial-gradient(#1b9a59 2px, transparent 2px),
+                    radial-gradient(#f7c948 2px, transparent 2px);
+            background-size: 120px 120px;
+            opacity: 0.3;
+            animation: float 16s linear infinite;
+        }
+        @keyframes float { 0% {transform: translateY(0);} 100% {transform: translateY(-120px);} }
+        .pill {
+            display:inline-flex; align-items:center; gap:8px;
+            padding:8px 14px; border-radius:12px;
+            background:#fff; border:1px solid #eee;
+            font-weight:600;
+            box-shadow:0 8px 22px rgba(0,0,0,0.08);
+        }
+        .btn-soft {
+            background: #fff;
+            border: 1px solid rgba(0,0,0,0.07);
+            box-shadow:0 10px 24px rgba(0,0,0,0.08);
+            border-radius:12px;
+        }
+    </style>
+
+    <div class="celebrate">
+        <div class="confetti"></div>
+        <h1 class="fw-bold text-success mb-2">Objednávka prijatá!</h1>
+        <p class="mb-3 text-muted">Ďakujeme za Vašu objednávku. Pripravujeme ju s láskou, už čoskoro bude na ceste.</p>
+
+        <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
+            <span class="pill"><i class="bi bi-clock-history text-primary"></i> Stav: spracováva sa</span>
+            <span class="pill"><i class="bi bi-geo-alt text-danger"></i> Doručenie na Vašu adresu</span>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+            <a th:if="${orderId}" th:href="@{/orders/detail/{id}(id=${orderId})}" class="btn btn-primary">
+                Detail objednávky
+            </a>
+            <a href="/orders/my" class="btn btn-soft">Moje objednávky</a>
+            <a href="/menu" class="btn btn-outline-secondary">Späť do Menu</a>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Detail objednávky')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        .card-soft { border:none; border-radius:18px; box-shadow:0 16px 40px rgba(0,0,0,0.08); }
+        .pill-info { display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:12px; background:#fff; border:1px solid #eee; font-weight:600; }
+        .table-pretty { width:100%; border-collapse: separate; border-spacing: 0 10px; }
+        .table-pretty thead { color:#555; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.04em; }
+        .table-pretty th { border: none; padding: 0.4rem 0.6rem; }
+        .table-pretty tbody tr { background:#fff; box-shadow:0 10px 26px rgba(0,0,0,0.07); border-radius:14px; overflow:hidden; }
+        .table-pretty tbody td { border: none; padding: 0.9rem 0.9rem; vertical-align: middle; }
+        .table-pretty tbody tr:hover { transform: translateY(-2px); box-shadow:0 14px 32px rgba(0,0,0,0.10); transition:.12s; }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-1">Objednávka č. <span th:text="${order.id}"></span></h2>
+            <div class="pill-info mt-1">
+                <i class="bi bi-clock-history text-primary"></i>
+                <span th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+            </div>
+        </div>
+        <a href="/orders/my" class="btn btn-outline-secondary">&larr; Späť</a>
+    </div>
+
+    <div class="card-soft bg-white mb-4">
+        <div class="card-body" style="padding: 1em">
+            <p class="mb-2">
+                <strong>Stav:</strong>
+                <span class="badge status-badge"
+                      th:classappend="${order.status == 'pending'} ? ' bg-warning text-dark' :
+                                      (order.status == 'preparing' ? ' bg-info text-dark' :
+                                      (order.status == 'ready' ? ' bg-primary' :
+                                      (order.status == 'delivering' ? ' bg-secondary' : ' bg-success')))"
+                      th:text="${order.status}"></span>
+            </p>
+            <p class="mb-0">
+                <strong>Poznámka:</strong> <span th:text="${order.note} ?: '-'"></span>
+            </p>
+        </div>
+    </div>
+
+    <div class="card-soft bg-white mb-3">
+        <div class="card-body p-0">
+            <div class="table-responsive px-3 pb-3 pt-2">
+                <table class="table-pretty">
+                    <thead>
+                    <tr>
+                        <th>Pizza</th>
+                        <th>Veľkosť</th>
+                        <th>Cena (za kus)</th>
+                        <th>Množstvo</th>
+                        <th>Spolu</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="item : ${orderItems}">
+                        <td th:text="${item.itemName}"></td>
+                        <td th:text="${item.itemSize}"></td>
+                        <td th:text="${item.itemPrice}"></td>
+                        <td th:text="${item.quantity}"></td>
+                        <td th:text="${#numbers.formatDecimal(item.itemPrice * item.quantity, 1, 2)}"></td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="4" class="text-end"><strong>Celková cena:</strong></td>
+                        <td><strong th:text="${order.totalPrice}"></strong> €</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div th:if="${order.status == 'pending'}" class="mb-3">
+        <form th:action="@{/orders/cancel/{id}(id=${order.id})}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-danger">Zrušiť objednávku</button>
+        </form>
+    </div>
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

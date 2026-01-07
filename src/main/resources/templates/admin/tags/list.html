@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Tagy - Admin')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red:#e5caaf; --green:#1b9a59; --cream:#fff7eb; }
+        body { background:#f6f5f2; }
+        .hero-box {
+            background: linear-gradient(135deg, rgba(215,38,61,0.12), rgba(27,154,89,0.16));
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-box::after {
+            content:""; position:absolute; inset:0;
+            background-image:url("https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80");
+            opacity:0.08; background-size:cover; background-position:center;
+        }
+        .hero-content { position:relative; z-index:1; }
+        .chip { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; background:#fff; border:1px solid rgba(0,0,0,0.06); font-weight:700; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
+        .card-soft { border:none; border-radius:18px; box-shadow:0 16px 42px rgba(0,0,0,0.08); background:#fff; padding:18px; }
+        .table-pretty { width:100%; border-collapse: separate; border-spacing: 0 10px; }
+        .table-pretty thead { color:#555; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.04em; }
+        .table-pretty th { border: none; padding: 0.45rem 0.75rem; }
+        .table-pretty tbody tr { background:#fff; box-shadow:0 10px 26px rgba(0,0,0,0.07); border-radius:14px; overflow:hidden; }
+        .table-pretty tbody td { border: none; padding: 0.95rem 0.95rem; vertical-align: middle; }
+        .table-pretty tbody tr:hover { transform: translateY(-2px); box-shadow:0 14px 32px rgba(0,0,0,0.10); transition:.12s; }
+    </style>
+
+    <section class="hero-box mb-4">
+        <div class="hero-content d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h1 class="mb-0">Tagy</h1>
+                <div class="chip"><i class="bi bi-tags-fill"></i> Admin</div>
+            </div>
+            <p class="mb-0 text-muted">Spravujte tagy pre kategorizáciu pízz.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/admin" class="btn btn-outline-secondary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                <a href="/admin/tags/new" class="btn btn-success"><i class="bi bi-plus-lg"></i> Pridať tag</a>
+            </div>
+        </div>
+    </section>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div class="card-soft">
+        <div class="table-responsive">
+            <table class="table-pretty mb-0">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Názov</th>
+                    <th class="text-end">Akcie</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tag : ${tags}">
+                    <td th:text="${tag.id}"></td>
+                    <td th:text="${tag.name}"></td>
+                    <td class="text-end">
+                        <a th:href="@{/admin/tags/edit/{id}(id=${tag.id})}" class="btn btn-sm btn-outline-warning me-1">
+                            <i class="bi bi-pencil"></i> Upraviť
+                        </a>
+                        <form th:action="@{/admin/tags/delete/{id}(id=${tag.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Naozaj chcete vymazať? ')">
+                                <i class="bi bi-trash"></i> Vymazať
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(tags)}">
+                    <td colspan="3" class="text-center text-muted py-4">Žiadne tagy.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

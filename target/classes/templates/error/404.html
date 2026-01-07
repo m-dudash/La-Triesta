@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('404 - Stránka sa nenašla')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="d-flex justify-content-center align-items-center py-5" style="min-height:80vh;">
+    <style>
+        :root { --red:#e5caaf; --green:#1b9a59; --cream:#fff7eb; }
+        body { background:#f6f5f2; }
+        .error-box {
+            width: min(80vw, 1100px);
+            min-height: 70vh;
+            background: linear-gradient(135deg, rgba(215,38,61,0.10), rgba(27,154,89,0.14));
+            border-radius: 24px;
+            box-shadow: 0 22px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        }
+        .error-content {
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            justify-content: center;
+        }
+        .error-code {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #fff;
+            padding: 10px 16px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 1rem;
+            color: #e67e22;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.08);
+        }
+        .big-title { font-size: 2.2rem; font-weight: 800; margin: 0; }
+        .lead { color:#444; }
+        .btn-rounded { border-radius: 12px; }
+        .error-illustration {
+            position: relative;
+            display: grid;
+            place-items: center;
+            padding: 18px;
+        }
+        .error-illustration img {
+            max-width: 70%;
+            height: auto;
+            filter: drop-shadow(0 16px 28px rgba(0,0,0,0.12));
+        }
+    </style>
+
+    <section class="error-box">
+        <div class="error-content">
+            <div class="error-code"><i class="bi bi-compass"></i> 404</div>
+            <h1 class="big-title">Stránka sa nenašla</h1>
+            <p class="lead">Hľadaný kúsok pizze tu nie je. Odkaz môže byť nesprávny alebo už neexistuje.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/" class="btn btn-outline-dark btn-rounded"><i class="bi bi-house-door"></i> Domov</a>
+                <a href="/menu" class="btn btn-success btn-rounded"><i class="bi bi-pie-chart"></i> Menu</a>
+            </div>
+        </div>
+        <div class="error-illustration">
+            <img src="https://i.ibb.co/SDtHcn2F/image-removebg-preview.png" alt="bg" border="0" />
+        </div>
+    </section>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

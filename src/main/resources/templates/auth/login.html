@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Prihlásenie - La Triesta')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red:#d7263d; --green:#1b9a59; --cream:#fff7eb; }
+        body { background: #f6f5f2; }
+        .auth-shell {
+            max-width: 460px;
+            margin: 0 auto;
+        }
+        .auth-card {
+            border: none;
+            border-radius: 18px;
+            padding: 26px 24px;
+            background: #fff;
+            box-shadow: 0 18px 46px rgba(0,0,0,0.08);
+        }
+        .auth-top {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .accent-bar {
+            width: 90px; height: 6px; border-radius: 999px;
+            background: linear-gradient(90deg, #009246, #fff 45%, #ce2b37);
+            margin: 0 auto 12px;
+        }
+    </style>
+
+    <div class="auth-shell">
+        <div class="auth-top">
+            <div class="accent-bar"></div>
+            <h1 class="fw-bold mb-1">Vitajte späť</h1>
+            <p class="text-muted mb-0">Prihláste sa a objednajte si svoju obľúbenú pizzu.</p>
+        </div>
+
+        <div class="auth-card">
+            <h4 class="text-center mb-4">Prihlásenie</h4>
+
+            <div th:if="${param.registered}" class="alert alert-success">Registrácia úspešná! Môžete sa prihlásiť.</div>
+            <div th:if="${param.error}" class="alert alert-danger">Nesprávny email alebo heslo.</div>
+            <div th:if="${param.logout}" class="alert alert-info">Boli ste úspešne odhlásený.</div>
+
+            <form th:action="@{/auth/login}" method="post" class="row g-3 needs-validation" novalidate>
+                <div class="col-12">
+                    <label for="username" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="username" name="username" placeholder="vas@email.sk" required>
+                    <small class="text-muted">Použite váš email na prihlásenie</small>
+                </div>
+
+                <div class="col-12">
+                    <label for="password" class="form-label">Heslo</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+
+                <div class="col-12 d-grid" >
+                    <button type="submit" class="btn btn-primary">Prihlásiť sa</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <p class="mb-0">Nemáte účet? <a th:href="@{/auth/register}">Zaregistrujte sa</a></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

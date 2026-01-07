@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Detail objednávky (Admin)')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red:#e5caaf; --green:#1b9a59; --cream:#fff7eb; }
+        body { background:#f6f5f2; }
+        .hero-box {
+            background: linear-gradient(135deg, rgba(215,38,61,0.12), rgba(27,154,89,0.16));
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-box::after {
+            content:""; position:absolute; inset:0;
+            background-image:url("https://completebusinessgroup.com/wp-content/uploads/2017/08/orders-post.jpg");
+            opacity:0.08; background-size:cover; background-position:center;
+        }
+        .hero-content { position:relative; z-index:1; }
+        .chip { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; background:#fff; border:1px solid rgba(0,0,0,0.06); font-weight:700; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
+        .card-soft { border:none; border-radius:18px; box-shadow:0 16px 42px rgba(0,0,0,0.08); background:#fff; padding:18px; }
+        .table-pretty { width:100%; border-collapse: separate; border-spacing: 0 10px; }
+        .table-pretty thead { color:#555; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.04em; }
+        .table-pretty th { border: none; padding: 0.45rem 0.75rem; }
+        .table-pretty tbody tr { background:#fff; box-shadow:0 10px 26px rgba(0,0,0,0.07); border-radius:14px; overflow:hidden; }
+        .table-pretty tbody td { border: none; padding: 0.95rem 0.95rem; vertical-align: middle; }
+        .table-pretty tbody tr:hover { transform: translateY(-2px); box-shadow:0 14px 32px rgba(0,0,0,0.10); transition:.12s; }
+    </style>
+
+    <section class="hero-box mb-4">
+        <div class="hero-content d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h1 class="mb-0">Objednávka #<span th:text="${order.id}"></span></h1>
+                <div class="chip"><i class="bi bi-clipboard-check-fill"></i> Admin</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="fw-bold">Status:</span>
+                <span class="badge bg-secondary" th:text="${order.status}"></span>
+            </div>
+            <p class="mb-0 text-muted">Detail objednávky, položky a úprava stavu.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/admin/orders" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Späť</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="card-soft mb-4">
+        <form th:action="@{/admin/orders/{id}/status(id=${order.id})}" method="post" class="row g-3 align-items-end">
+            <div class="col-auto">
+                <label for="statusSelect" class="form-label fw-bold mb-1">Zmeniť status:</label>
+                <select id="statusSelect" name="status" class="form-select" th:value="${order.status}">
+                    <option>pending</option>
+                    <option>preparing</option>
+                    <option>ready</option>
+                    <option>delivering</option>
+                    <option>delivered</option>
+                    <option>cancelled</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary mt-3"><i class="bi bi-arrow-repeat"></i> Zmeniť status</button>
+            </div>
+        </form>
+    </div>
+
+
+    <div class="card-soft mb-4">
+        <div class="fw-bold mb-1">Poznámka zákazníka:</div>
+        <div class="text-muted" th:text="${order.note != null && !#strings.isEmpty(order.note) ? order.note : '—'}">—</div>
+    </div>
+
+    <div th:if="${orderItems}" class="card-soft">
+        <div class="table-responsive">
+            <table class="table-pretty mb-0">
+                <thead>
+                <tr>
+                    <th>Pica</th>
+                    <th>Veľkosť</th>
+                    <th>Cena</th>
+                    <th>Množstvo</th>
+                    <th>Spolu</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${orderItems}">
+                    <td th:text="${item.itemName}"></td>
+                    <td th:text="${item.itemSize}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.itemPrice, 1, 2)} + ' €'"></td>
+                    <td th:text="${item.quantity}"></td>
+                    <td th:text="${#numbers.formatDecimal(item.itemPrice * item.quantity, 1, 2)} + ' €'"></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="4" class="text-end fw-bold">Celkom:</td>
+                    <td class="fw-bold" th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2)} + ' €'"></td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

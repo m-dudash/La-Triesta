@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header :: head('Pizza detail')"></head>
+<body style="background:#f8f7f4;">
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<div class="container py-5">
+    <style>
+        .pill { display:inline-flex; gap:6px; align-items:center; padding:6px 12px; border-radius:999px; background:#fff; border:1px solid #eee; }
+        .price-pill { background:#1b9a59; color:#fff; }
+        .shadow-card { border:none; border-radius:18px; box-shadow:0 18px 46px rgba(0,0,0,0.08); }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="/menu" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Späť do menu</a>
+        <div class="pill">
+            <i class="bi bi-geo-alt text-danger"></i>
+            <span>Pečené v La Triesta</span>
+        </div>
+    </div>
+
+    <div class="row g-4 align-items-start">
+        <div class="col-lg-5">
+            <div class="shadow-card p-3 bg-white">
+                <img th:if="${pizza.imageUrl}" th:src="${pizza.imageUrl}" class="img-fluid rounded-4 mb-3 w-100" th:alt="${pizza.name}">
+                <img th:if="${pizza.imageUrl == null}" src="https://placehold.co/700x500?text=La+Triesta" class="img-fluid rounded-4 mb-3" alt="Pizza">
+                <div class="d-flex flex-wrap gap-2">
+                    <span th:each="tag : ${pizza.tags}" class="badge bg-success fs-5 px-3 py-2" th:text="${tag.name}"></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-7">
+            <div class="shadow-card p-4 bg-white h-100">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <h2 class="mb-0" th:text="${pizza.name}"></h2>
+                    <span class="pill price-pill">
+                        <i class="bi bi-heart-fill"></i> Obľúbená voľba
+                    </span>
+                </div>
+                <p class="text-muted" th:text="${pizza.description}"></p>
+
+                <div class="mb-3">
+                    <strong>Ingrediencie:</strong>
+                    <div class="d-flex flex-wrap gap-2 mt-2">
+                        <span th:each="ing : ${pizza.ingredients}"
+                              class="badge bg-light text-dark border fs-6 px-3 py-2 "
+                              th:text="${ing.name}"></span>
+                        <span th:if="${pizza.ingredients == null or #lists.isEmpty(pizza.ingredients)}"
+                              class="text-muted fst-italic">Bez uvedených ingrediencií</span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <strong>Veľkosti a ceny:</strong>
+                    <ul class="mt-2">
+                        <li th:each="item : ${pizza.pizzaItems}"
+                            th:if="${item.active}"
+                            th:text="${item.size.name
+                                    + (item.size.diameter != null ? ' (' + #numbers.formatDecimal(item.size.diameter,1,2) + ' cm' : '')
+                                    + (item.size.weight != null ? ', ' + item.size.weight + ' g' : '')
+                                    + ') - ' + #numbers.formatDecimal(item.price, 1, 2) + ' €'}">
+                            32 cm (32.00 cm, 500 g) - 9.50 €
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-light border" sec:authorize="isAuthenticated()">
+                    <div class="fw-semibold mb-1">Vyberte si veľkosť a množstvo</div>
+                    <small class="text-muted">Môžete pridať viac kusov naraz.</small>
+                </div>
+
+                <form th:action="@{/cart/add}" method="post" class="mb-3" sec:authorize="isAuthenticated()">
+                    <div class="mb-3">
+                        <label for="sizeSelect" class="form-label">Veľkosť</label>
+                        <select id="sizeSelect" name="pizzaItemId" class="form-select" required>
+                            <option value="">-- Vyberte veľkosť --</option>
+                            <option th:each="item : ${pizza.pizzaItems}"
+                                    th:if="${item.active}"
+                                    th:value="${item.id}"
+                                    th:text="${item.size.name
+                                            + (item.size.diameter != null ? ' (' + #numbers.formatDecimal(item.size.diameter,1,2) + ' cm' : '')
+                                            + (item.size.weight != null ? ', ' + item.size.weight + ' g' : '')
+                                            + ') - ' + #numbers.formatDecimal(item.price, 1, 2) + ' €'}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantityInput" class="form-label">Množstvo</label>
+                        <input type="number" id="quantityInput" name="quantity" min="1" value="1" class="form-control" style="max-width:140px;">
+                    </div>
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-cart-plus"></i> Pridať do košíka</button>
+                </form>
+
+                <div class="alert alert-light border" sec:authorize="isAnonymous()">
+                    <div class="fw-semibold mb-1">Najprv sa prihláste</div>
+                    <small class="text-muted">Aby ste mohli pridávať položky do košíka.</small>
+                </div>
+
+                <div class="d-flex gap-3">
+                    <div class="pill"><i class="bi bi-clock-history text-primary"></i> Pripravené do 15 min</div>
+                    <div class="pill"><i class="bi bi-leaf text-success"></i> Čerstvé suroviny</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

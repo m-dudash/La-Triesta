@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head(${pizza.id != null} ? 'Upraviť pizzu' : 'Nová pizza')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red:#e5caaf; --green:#1b9a59; --cream:#fff7eb; }
+        body { background:#f6f5f2; }
+        .hero-box {
+            background: linear-gradient(135deg, rgba(215,38,61,0.12), rgba(27,154,89,0.16));
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-box::after {
+            content:""; position:absolute; inset:0;
+            background-image:url("https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80");
+            opacity:0.08; background-size:cover; background-position:center;
+        }
+        .hero-content { position:relative; z-index:1; }
+        .chip { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; background:#fff; border:1px solid rgba(0,0,0,0.06); font-weight:700; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
+        .card-soft { border:none; border-radius:18px; box-shadow:0 16px 42px rgba(0,0,0,0.08); background:#fff; padding:35px; }
+        .section-title { font-weight:800; font-size:1.05rem; margin-bottom:8px; display:flex; gap:8px; align-items:center; }
+        .grid-two { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; }
+        .table-pretty { width:100%; border-collapse: separate; border-spacing: 0 10px; }
+        .table-pretty thead { color:#555; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.04em; }
+        .table-pretty th { border: none; padding: 0.45rem 0.75rem; }
+        .table-pretty tbody tr { background:#fff; box-shadow:0 10px 26px rgba(0,0,0,0.07); border-radius:14px; overflow:hidden; }
+        .table-pretty tbody td { border: none; padding: 0.95rem 0.95rem; vertical-align: middle; }
+        .table-pretty tbody tr:hover { transform: translateY(-2px); box-shadow:0 14px 32px rgba(0,0,0,0.10); transition:.12s; }
+        .form-switch .switch-ios {
+            width: 44px; height: 24px;
+            background-color: #c5c5c5;
+            border-radius: 999px;
+            transition: all .2s ease;
+            border: none;
+            box-shadow: inset 0 0 1px rgba(0,0,0,0.2);
+        }
+        .form-switch .switch-ios:checked { background-color: #1b9a59; }
+        .form-switch .switch-ios::before {
+            height: 20px; width: 20px;
+            border-radius: 50%;
+            top: 2px; left: 2px;
+            background: #fff;
+            transition: all .2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .form-switch .switch-ios:checked::before { transform: translateX(20px); }
+    </style>
+
+    <section class="hero-box mb-4">
+        <div class="hero-content d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h1 class="mb-0" th:text="${pizza.id != null} ? 'Upraviť pizzu' : 'Nová pizza'"></h1>
+                <div class="chip"><i class="bi bi-pie-chart-fill"></i> Pizza</div>
+            </div>
+            <p class="mb-0 text-muted">Upravte názov, popis, obrázok, dostupnosť, ingrediencie a veľkosti.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/admin/pizzas" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Späť</a>
+                <a href="/admin" class="btn btn-outline-dark"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="card-soft">
+        <form th:action="@{/admin/pizzas/save}" th:object="${pizza}" method="post" class="row g-3">
+            <input type="hidden" th:field="*{id}">
+
+            <div class="col-12 section-title"><i class="bi bi-info-circle"></i> Základné údaje</div>
+            <div class="grid-two">
+                <div>
+                    <label for="name" class="form-label">Názov *</label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}"
+                           th:classappend="${#fields.hasErrors('name')} ? 'is-invalid' : ''" required>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                </div>
+                <div>
+                    <label for="imageUrl" class="form-label">URL obrázka</label>
+                    <input type="text" class="form-control" id="imageUrl" th:field="*{imageUrl}"
+                           th:classappend="${#fields.hasErrors('imageUrl')} ? 'is-invalid' : ''">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('imageUrl')}" th:errors="*{imageUrl}"></div>
+                </div>
+            </div>
+
+            <div class="grid-two">
+                <div>
+                    <label class="form-label">Náhľad</label>
+                    <div class="border rounded p-2 text-center" style="background:#fff7eb;">
+                        <img
+                                id="imagePreview"
+                                th:src="${pizza.imageUrl != null ? pizza.imageUrl : 'https://placehold.co/200x140?text=La+Triesta'}"
+                                alt="preview"
+                                style="max-width:160px; border-radius:12px;"
+                        >
+                    </div>
+                </div>
+
+            </div>
+
+            <div>
+                <label for="description" class="form-label">Popis</label>
+                <textarea class="form-control" id="description" rows="3" th:field="*{description}"
+                          th:classappend="${#fields.hasErrors('description')} ? 'is-invalid' : ''"></textarea>
+                <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+            </div>
+
+            <div class="grid-two">
+                <div>
+                    <div class="section-title"><i class="bi bi-basket2-fill"></i> Ingrediencie</div>
+                    <div class="border rounded p-2" style="max-height:240px; overflow:auto;">
+                        <div th:each="ingredient : ${allIngredients}" class="form-check">
+                            <input type="checkbox" class="form-check-input" th:id="'ingredient' + ${ingredient.id}"
+                                   th:name="ingredientIds" th:value="${ingredient.id}"
+                                   th:checked="${pizza.ingredients.contains(ingredient)}">
+                            <label class="form-check-label" th:for="'ingredient' + ${ingredient.id}" th:text="${ingredient.name}"></label>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="section-title"><i class="bi bi-tags-fill"></i> Tagy</div>
+                    <div class="border rounded p-2" style="max-height:240px; overflow:auto;">
+                        <div th:each="tag : ${allTags}" class="form-check">
+                            <input type="checkbox" class="form-check-input" th:id="'tag' + ${tag.id}"
+                                   th:name="tagIds" th:value="${tag.id}"
+                                   th:checked="${pizza.tags.contains(tag)}">
+                            <label class="form-check-label" th:for="'tag' + ${tag.id}" th:text="${tag.name}"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12" th:if="${pizza.id == null}">
+                <div class="section-title"><i class="bi bi-plus-circle"></i> Pridať aspoň jednu veľkosť</div>
+                <div class="grid-two">
+                    <div>
+                        <label for="sizeId" class="form-label">Veľkosť *</label>
+                        <select class="form-select" id="sizeId" name="sizeId" required
+                                th:classappend="${#fields.hasErrors('pizzaItems')} ? 'is-invalid' : ''">
+                            <option value="">Vyberte veľkosť</option>
+                            <option th:each="size : ${allSizes}" th:value="${size.id}" th:text="${size.name} + ' (' + ${size.diameter} + ' cm)'"></option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="price" class="form-label">Cena *</label>
+                        <input type="number" class="form-control" id="price" name="price" step="0.01" min="0.01" required
+                               th:classappend="${#fields.hasErrors('pizzaItems')} ? 'is-invalid' : ''">
+                    </div>
+                </div>
+                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('pizzaItems')}" th:errors="*{pizzaItems}"></div>
+                <p class="text-muted mt-2">Ďalšie veľkosti môžete pridať po vytvorení pizze v režime úpravy.</p>
+            </div>
+
+            <div class="col-12" th:unless="${pizza.id == null}">
+                <div class="section-title"><i class="bi bi-arrows-angle-expand"></i> Veľkosti a ceny</div>
+                <div class="table-responsive">
+                    <table class="table-pretty mb-3">
+                        <thead>
+                        <tr>
+                            <th>Veľkosť</th>
+                            <th>Cena</th>
+                            <th class="text-end">Akcia</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="item : ${pizzaItems}" th:if="${item.active}">
+                            <td th:text="${item.size.name} + ' (' + ${item.size.diameter} + ' cm)'"></td>
+                            <td th:text="${#numbers.formatDecimal(item.price,1,2)} + ' €'"></td>
+                            <td class="text-end">
+                                <form th:action="@{/admin/pizzas/items/delete/{id}(id=${item.id})}" method="post" class="d-inline">
+                                    <input type="hidden" name="pizzaId" th:value="${pizza.id}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger">Skryť</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${pizzaItems == null or #lists.isEmpty(pizzaItems)}">
+                            <td colspan="3" class="text-center text-muted py-3">Žiadne veľkosti.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section-title"><i class="bi bi-plus-circle"></i> Pridať novú veľkosť</div>
+                <div class="grid-two mb-3">
+                    <div>
+                        <label for="sizeIdAdd" class="form-label">Veľkosť *</label>
+                        <select class="form-select" id="sizeIdAdd" name="sizeId" form="addSizeForm" required>
+                            <option value="">Vyberte veľkosť</option>
+                            <option th:each="size : ${availableSizes}"
+                                    th:value="${size.id}"
+                                    th:text="${size.name} + ' (' + ${size.diameter} + ' cm)'"
+                                    th:disabled="${availableSizes == null || availableSizes.isEmpty()}"></option>
+                            <option value="" disabled th:if="${availableSizes == null || availableSizes.isEmpty()}">Všetky veľkosti už priradené</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="priceAdd" class="form-label">Cena *</label>
+                        <input type="number" class="form-control" id="priceAdd" name="price" form="addSizeForm" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                <form th:action="@{/admin/pizzas/{pizzaId}/items/save(pizzaId=${pizza.id})}" method="post" id="addSizeForm">
+                    <button type="submit" class="btn btn-success">Pridať</button>
+                </form>
+
+                <div class="section-title mt-4"><i class="bi bi-archive"></i> Skryté veľkosti</div>
+                <div class="table-responsive">
+                    <table class="table-pretty">
+                        <tbody>
+                        <tr th:each="item : ${pizzaItems}" th:if="${!item.active}">
+                            <td th:text="${item.size.name} + ' (' + ${item.size.diameter} + ' cm)'"></td>
+                            <td th:text="${#numbers.formatDecimal(item.price,1,2)} + ' €'"></td>
+                            <td class="text-end">
+                                <form th:action="@{/admin/pizzas/items/restore/{id}(id=${item.id})}" method="post" class="d-inline">
+                                    <input type="hidden" name="pizzaId" th:value="${pizza.id}">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary">Obnoviť</button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${pizzaItems == null or #lists.isEmpty(pizzaItems)}">
+                            <td colspan="3" class="text-center text-muted py-3">Žiadne skryté veľkosti.</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-success"><i class="bi bi-check2-circle"></i> Uložiť</button>
+                <a href="/admin/pizzas" class="btn btn-secondary"><i class="bi bi-x"></i> Zrušiť</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+<script>
+    const imageInput = document.getElementById("imageUrl");
+    const preview = document.getElementById("imagePreview");
+    const placeholder = "https://placehold.co/200x140?text=La+Triesta";
+
+    imageInput.addEventListener("input", () => {
+        const url = imageInput.value.trim();
+
+        if (url === "") {
+            preview.src = placeholder;
+            return;
+        }
+
+        preview.src = url;
+
+        preview.onerror = () => {
+            preview.src = placeholder;
+        };
+    });
+</script>
+
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="siteFooter">
+<footer class="mt-5 border-top" style="box-shadow:0 -10px 28px rgba(0,0,0,0.06); background: #fff7eb">
+    <style>
+        html, body { height: 100%; }
+        body { min-height: 100vh; display: flex; flex-direction: column; background: inherit; }
+        main { flex: 1 0 auto; }
+        footer { margin-top: auto; }
+
+        .footer-wrap {
+            max-width: 1260px;
+            margin: 0 auto;
+            padding: 28px 12px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 18px;
+        }
+        .logo-block {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .logo-block img { height: 150px; }
+        .footer-title { font-weight: 800; font-size: 1.1rem; }
+        .contacts-col {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+        .footer-text { color:#555; margin:0; }
+        .footer-link { color:#1f1f1f; text-decoration:none; }
+        .footer-link:hover { color:#000; text-decoration:underline; }
+        .footer-wrap > div { text-align: center; }
+    </style>
+
+    <div class="footer-wrap">
+        <div>
+            <div class="logo-block mb-2">
+                <img src="https://i.ibb.co/vRjWzPJ/logo.png" alt="logo" border="0" />
+            </div>
+            <p class="footer-text mb-1">Skutočná talianska chuť, pečené na kameni.</p>
+            <p class="footer-text mb-0">Trieste: December 2025</p>
+        </div>
+
+        <div>
+            <div class="logo-block mb-2">
+               <img src="https://i.ibb.co/Hfsgk5CT/banner-Centered-PNG.png" alt="banner-Centered-PNG" border="0" />
+            </div>
+            <p class="footer-text mb-1">Školský projekt · web aplikácia pizzerie.</p>
+            <p class="footer-text mb-0">WAJ: January 2026</p>
+        </div>
+
+        <div class="contacts-col">
+            <div class="footer-title mb-2">Kontakt a adresa</div>
+            <p class="footer-text mb-1"><i class="bi bi-geo-alt"></i> Piazza Unità d'Italia, Trieste</p>
+            <p class="footer-text mb-1"><i class="bi bi-telephone"></i> +39 040 123 4567</p>
+            <p class="footer-text mb-0">
+                <i class="bi bi-envelope"></i>
+                <a class="footer-link" href="mailto:kontakt@latriesta.it">kontakt@latriesta.it</a>
+            </p>
+        </div>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="fragments/header :: head('Upraviť profil')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5" style="max-width: 960px;">
+    <style>
+        :root { --red:#d7263d; --green:#1b9a59; --cream:#fff7eb; }
+        .panel { border:none; border-radius:18px; box-shadow:0 16px 40px rgba(0,0,0,0.08); background:#fff; padding:20px; }
+        .section-title { font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+        .section {
+            border:1px solid #f1f1f1; border-radius:14px; padding:16px; margin-bottom:16px;
+            background:linear-gradient(135deg, rgba(27,154,89,0.05), rgba(0,0,0,0.01));
+        }
+        .help-text { font-size:0.9rem; color:#6c757d; }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-1">Upraviť profil</h2>
+            <small class="text-muted">Aktualizujte kontakty a heslo</small>
+        </div>
+        <a class="btn btn-outline-secondary" href="/">Späť</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div class="panel">
+        <form th:action="@{/profile/edit}" th:object="${profileDto}" method="post" class="row g-3">
+            <div th:if="${#fields.hasErrors()}" class="alert alert-danger mb-0">
+                Skontrolujte chybné polia nižšie.
+            </div>
+
+            <div class="col-12 section">
+                <div class="section-title"><i class="bi bi-person"></i> Osobné údaje</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Používateľské meno</label>
+                        <input type="text" th:field="*{username}" class="form-control" required>
+                        <div class="text-danger" th:errors="*{username}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Telefón</label>
+                        <input type="text" th:field="*{phone}" class="form-control" required>
+                        <div class="text-danger" th:errors="*{phone}"></div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Adresa</label>
+                        <input type="text" th:field="*{address}" class="form-control" required>
+                        <div class="text-danger" th:errors="*{address}"></div>
+                        <div class="help-text">Pridajte poschodie/dvere pre rýchlejšie doručenie.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">URL Avatar</label>
+                        <input type="url" th:field="*{avatarUrl}" class="form-control" placeholder="https://...">
+                        <div class="text-danger" th:errors="*{avatarUrl}"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 section">
+                <div class="section-title"><i class="bi bi-shield-lock"></i> Zmena hesla (voliteľné)</div>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Nové heslo</label>
+                        <input type="password" th:field="*{password}" class="form-control" placeholder="Nechajte prázdne, ak nechcete meniť">
+                        <div class="text-danger" th:errors="*{password}"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Potvrdenie hesla</label>
+                        <input type="password" th:field="*{confirmPassword}" class="form-control" placeholder="Nechajte prázdne, ak nechcete meniť">
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Uložiť</button>
+                <a href="/" class="btn btn-secondary">Späť</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

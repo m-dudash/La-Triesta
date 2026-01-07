@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Registrácia - La Triesta')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red:#d7263d; --green:#1b9a59; --cream:#fff7eb; }
+        body { background: #f6f5f2; }
+        .auth-shell {
+            max-width: 520px;
+            margin: 0 auto;
+        }
+        .auth-card {
+            border: none;
+            border-radius: 18px;
+            padding: 26px 24px;
+            background: #fff;
+            box-shadow: 0 18px 46px rgba(0,0,0,0.08);
+        }
+        .auth-top {
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .accent-bar {
+            width: 110px; height: 6px; border-radius: 999px;
+            background: linear-gradient(90deg, #009246, #fff 45%, #ce2b37);
+            margin: 0 auto 12px;
+        }
+    </style>
+
+    <div class="auth-shell">
+        <div class="auth-top">
+            <div class="accent-bar"></div>
+            <h1 class="fw-bold mb-1">Vytvorte si účet</h1>
+            <p class="text-muted mb-0">Objednávky, uložené adresy a rýchle doručenie.</p>
+        </div>
+
+        <div class="auth-card">
+            <h4 class="text-center mb-4">Registrácia</h4>
+
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+            <div th:if="${passwordError}" class="alert alert-danger" th:text="${passwordError}"></div>
+
+            <form th:action="@{/auth/register}" th:object="${registrationDto}" method="post" class="row g-3">
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Používateľské meno *</label>
+                    <input type="text" class="form-control" id="username" th:field="*{username}"
+                           th:classappend="${#fields.hasErrors('username')} ? 'is-invalid' :''">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="email" class="form-label">Email *</label>
+                    <input type="email" class="form-control" id="email" th:field="*{email}"
+                           th:classappend="${#fields.hasErrors('email')} ? 'is-invalid' :''">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Heslo *</label>
+                    <input type="password" class="form-control" id="password" th:field="*{password}"
+                           th:classappend="${#fields.hasErrors('password')} ? 'is-invalid' :''">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="confirmPassword" class="form-label">Potvrdiť heslo *</label>
+                    <input type="password" class="form-control" id="confirmPassword" th:field="*{confirmPassword}"
+                           th:classappend="${#fields.hasErrors('confirmPassword')} ? 'is-invalid' :''">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="address" class="form-label">Adresa *</label>
+                    <input type="text" class="form-control" id="address" th:field="*{address}"
+                           th:classappend="${#fields.hasErrors('address')} ? 'is-invalid' :''">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="phone" class="form-label">Telefón *</label>
+                    <input type="text" class="form-control" id="phone" th:field="*{phone}"
+                           th:classappend="${#fields.hasErrors('phone')} ? 'is-invalid' : ''">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                </div>
+
+                <div class="col-12 d-grid">
+                    <button type="submit" class="btn btn-success">Zaregistrovať sa</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <p class="mb-0">Už máte účet? <a th:href="@{/auth/login}">Prihláste sa</a></p>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Objednávky na prípravu (Šéf)')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        .hero-staff {
+            background: linear-gradient(135deg, rgba(215,38,61,0.12), rgba(0,0,0,0.05));
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+        }
+        .stat-pill {
+            display:inline-flex; align-items:center; gap:8px;
+            padding:8px 14px; border-radius:12px; background:#fff;
+            box-shadow:0 8px 22px rgba(0,0,0,0.08);
+            font-weight:600;
+        }
+        .card-soft { border:none; border-radius:16px; box-shadow:0 12px 32px rgba(0,0,0,0.08); }
+        .table-pretty { width:100%; border-collapse: separate; border-spacing: 0 10px; }
+        .table-pretty thead { color:#555; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.04em; }
+        .table-pretty th { border: none; padding: 0.4rem 0.6rem; }
+        .table-pretty tbody tr { background:#fff; box-shadow:0 10px 26px rgba(0,0,0,0.07); border-radius:14px; overflow:hidden; }
+        .table-pretty tbody td { border: none; padding: 0.9rem 0.9rem; vertical-align: middle; }
+        .table-pretty tbody tr:hover { transform: translateY(-2px); box-shadow:0 14px 32px rgba(0,0,0,0.10); transition:.12s; }
+        .items-list { font-size: 0.9rem; color:#444; }
+    </style>
+
+    <section class="hero-staff mb-4">
+        <div class="d-flex flex-wrap justify-content-between gap-3 align-items-center">
+            <div>
+                <h2 class="mb-1">Objednávky na prípravu (Šéf)</h2>
+                <p class="mb-0 text-muted">Vyberte si objednávku, označte prípravu a hotovo.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <span class="stat-pill"><i class="bi bi-list-check text-danger"></i> Spolu: <span th:text="${#lists.size(orders)}">0</span></span>
+                <a href="/" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Domov</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="card-soft bg-white p-3">
+        <div class="table-responsive">
+            <table class="table-pretty">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Dátum</th>
+                    <th>Poznámka</th>
+                    <th>Položky</th>
+                    <th>Meno zákazníka</th>
+                    <th>Stav</th>
+                    <th>Akcia</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.id}"></td>
+                    <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td th:text="${order.note} ?: '-'"></td>
+                    <td class="items-list">
+                        <ul class="mb-0 ps-3">
+                            <li th:each="oi : ${order.orderItems}"
+                                th:text="${oi.pizzaItem.pizza.name + ' - ' + oi.pizzaItem.size.name + ' x' + oi.quantity}">Pizza</li>
+                        </ul>
+                    </td>
+                    <td th:text="${order.user.username} ?: order.user.email"></td>
+                    <td>
+                        <span class="badge"
+                              th:text="${order.status}"
+                              th:classappend="${order.status == 'pending'} ? ' bg-warning text-dark' :
+                                              (order.status == 'preparing' ? ' bg-info text-dark' : ' bg-success')"></span>
+                    </td>
+                    <td class="d-flex gap-2">
+                        <form th:if="${order.status == 'pending'}"
+                              th:action="@{/staff/chef/take/{id}(id=${order.id})}" method="post">
+                            <button type="submit" class="btn btn-primary btn-sm">Vziať do práce</button>
+                        </form>
+                        <form th:if="${order.status == 'preparing'}"
+                              th:action="@{/staff/chef/ready/{id}(id=${order.id})}" method="post">
+                            <button type="submit" class="btn btn-success btn-sm">Označiť ako pripravené</button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${orders.size() == 0}">
+                    <td colspan="7" class="text-center py-4"><i>Žiadne objednávky</i></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

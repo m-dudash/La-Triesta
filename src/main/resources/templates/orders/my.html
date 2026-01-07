@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Moje objednávky')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        .stat-card { border:none; border-radius:16px; box-shadow:0 12px 32px rgba(0,0,0,0.07); }
+        .table-pretty { width:100%; border-collapse: separate; border-spacing: 0 10px; }
+        .table-pretty thead { color:#555; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.04em; }
+        .table-pretty th { border: none; padding: 0.4rem 0.6rem; }
+        .table-pretty tbody tr { background:#fff; box-shadow:0 10px 26px rgba(0,0,0,0.07); border-radius:14px; overflow:hidden; }
+        .table-pretty tbody td { border: none; padding: 0.9rem 0.9rem; vertical-align: middle; }
+        .table-pretty tbody tr:hover { transform: translateY(-2px); box-shadow:0 14px 32px rgba(0,0,0,0.10); transition:.12s; }
+    </style>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-1">Moje objednávky</h1>
+            <small class="text-muted">Prehľad a detaily vašich objednávok.</small>
+        </div>
+        <a href="/menu" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Späť do menu</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="card stat-card text-bg-light">
+                <div class="card-body">
+                    <div class="fw-bold">Za posledný týždeň</div>
+                    <div class="display-6" th:text="${weekCount}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card stat-card text-bg-light">
+                <div class="card-body">
+                    <div class="fw-bold">Za posledný mesiac</div>
+                    <div class="display-6" th:text="${monthCount}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card stat-card text-bg-light">
+                <div class="card-body">
+                    <div class="fw-bold">Za posledný rok</div>
+                    <div class="display-6" th:text="${yearCount}">0</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="card stat-card text-bg-primary text-white">
+                <div class="card-body">
+                    <div class="fw-bold">Spolu minuté</div>
+                    <div class="display-6" th:text="${#numbers.formatDecimal(totalSpent, 1, 2)} + ' €'">0 €</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-soft bg-white p-3">
+        <div class="table-responsive">
+            <table class="table-pretty">
+                <thead>
+                <tr>
+                    <th>Číslo</th>
+                    <th>Dátum</th>
+                    <th>Stav</th>
+                    <th>Celkom (€)</th>
+                    <th>Detail</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="order : ${orders}">
+                    <td th:text="${order.id}"></td>
+                    <td th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+                    <td>
+                        <span class="badge status-badge"
+                              th:classappend="${order.status == 'pending'} ? ' bg-warning text-dark' :
+                                              (order.status == 'preparing' ? ' bg-info text-dark' :
+                                              (order.status == 'ready' ? ' bg-primary' :
+                                              (order.status == 'delivering' ? ' bg-secondary' : ' bg-success')))"
+                              th:text="${order.status}"></span>
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(order.totalPrice, 1, 2)}"></td>
+                    <td>
+                        <a th:href="@{/orders/detail/{id}(id=${order.id})}" class="btn btn-outline-dark btn-sm">Detail</a>
+                    </td>
+                </tr>
+                <tr th:if="${orders == null or orders.isEmpty()}">
+                    <td colspan="5" class="text-center py-4"><i>Žiadne objednávky</i></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

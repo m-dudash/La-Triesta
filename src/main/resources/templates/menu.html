@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Menu - La Triesta')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        .hero-menu {
+            background: linear-gradient(135deg, rgba(215,38,61,0.10), rgba(27,154,89,0.16));
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 14px 38px rgba(0,0,0,0.08);
+        }
+        .hero-menu .flag-dot { width:12px; height:12px; border-radius:50%; display:inline-block; }
+        .menu-grid { display: grid; grid-template-columns: 300px 1fr; gap: 24px; }
+        @media (max-width: 992px) { .menu-grid { grid-template-columns: 1fr; } }
+        .filter-box {
+            background: #fff;
+            padding: 18px;
+            border-radius: 16px;
+            box-shadow: 0 14px 32px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 24px;
+        }
+        .tag-cloud span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(27,154,89,0.12);
+            color: #1b9a59;
+            margin: 2px;
+            font-weight: 600;
+        }
+        .pizza-card-link { text-decoration:none; color: inherit; }
+        .pizza-card {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: #fff;
+            transition: transform .15s ease, box-shadow .15s ease;
+            height: 100%;
+        }
+        .pizza-card:hover { transform: translateY(-3px); box-shadow: 0 18px 46px rgba(0,0,0,0.12); }
+        .pizza-card .price-chip {
+            position: absolute;
+            top: 10px; right: 10px;
+            background: #d7263d;
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+    </style>
+
+    <section class="hero-menu mb-4 d-flex flex-column gap-3">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="flag-dot" style="background:#009246"></span>
+            <span class="flag-dot" style="background:#fff; border:1px solid #e0e0e0"></span>
+            <span class="flag-dot" style="background:#ce2b37"></span>
+            <h1 class="mb-0 ms-2">Menu</h1>
+        </div>
+        <p class="mb-0">Vyberte si pizzu podľa chuti. Filtrovanie funguje OR: buď názov, alebo tag.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="/" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Späť na domov</a>
+            <a href="/cart" class="btn btn-primary"><i class="bi bi-cart"></i> Košík</a>
+        </div>
+    </section>
+
+    <div class="menu-grid">
+        <form class="filter-box" method="get" th:action="@{/menu}">
+            <h5 class="mb-3">Filtrovať</h5>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Vyhľadať podľa názvu</label>
+                <input id="searchInput" type="text" class="form-control" name="search" placeholder="Napr. Margherita" th:value="${search}">
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Tag</label>
+                <select id="tagSelect" class="form-select" name="tag">
+                    <option value="" th:selected="${selectedTag == null || selectedTag == ''}">-- všetky tagy --</option>
+                    <option th:each="tag : ${tags}" th:value="${tag.name}" th:text="${tag.name}" th:selected="${selectedTag == tag.name}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100 mb-3"><i class="bi bi-funnel"></i> Filtrovať</button>
+
+            <div class="tag-cloud">
+                <span th:each="tag : ${tags}"
+                      th:if="${selectedTag == null or selectedTag == '' or tag.name == selectedTag}"
+                      th:text="${tag.name}"></span>
+            </div>
+        </form>
+
+        <div class="row g-4">
+            <div class="col-md-6 col-lg-4" th:each="pizza : ${pizzas}">
+                <a class="pizza-card-link" th:href="@{'/pizza/' + ${pizza.slug}}">
+                    <div class="pizza-card">
+                        <div class="position-relative">
+                            <div class="ratio ratio-16x9 bg-light">
+                                <img th:if="${pizza.imageUrl}" th:src="${pizza.imageUrl}" class="object-fit-cover" alt="Pizza">
+                                <img th:if="${pizza.imageUrl == null}" src="https://placehold.co/600x400?text=La+Triesta" class="object-fit-cover" alt="Pizza">
+                            </div>
+                            <span class="price-chip">Top</span>
+                        </div>
+                        <div class="p-3 d-flex flex-column h-100">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h5 class="mb-0" th:text="${pizza.name}"></h5>
+                                <span class="badge bg-danger text-white">Obľúbená</span>
+                            </div>
+                            <p class="text-muted small mb-2" th:text="${pizza.description}"></p>
+                            <div class="mb-2">
+                                <span th:each="tag : ${pizza.tags}" class="badge bg-success me-1" th:text="${tag.name}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(pizzas)}" class="col-12">
+                <div class="alert alert-warning text-center mt-4">Nenašli sa žiadne pizze.</div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // OR-фильтрация: при выборе тега очищаем поиск; при вводе поиска сбрасываем тег.
+    (function() {
+        const searchInput = document.getElementById('searchInput');
+        const tagSelect   = document.getElementById('tagSelect');
+        if (searchInput && tagSelect) {
+            tagSelect.addEventListener('change', () => {
+                if (tagSelect.value) searchInput.value = '';
+            });
+            searchInput.addEventListener('input', () => {
+                if (searchInput.value.trim().length > 0) tagSelect.value = '';
+            });
+        }
+    })();
+</script>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

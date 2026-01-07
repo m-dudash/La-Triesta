@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head(${user.id == null ? 'Pridať používateľa' : 'Editovať používateľa'} + ' - La Triesta Admin')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red:#e5caaf; --green:#1b9a59; --cream:#fff7eb; }
+        body { background:#f6f5f2; }
+        .hero-box {
+            background: linear-gradient(135deg, rgba(215,38,61,0.12), rgba(27,154,89,0.16));
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-box::after {
+            content:""; position:absolute; inset:0;
+            background-image:url("https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80");
+            opacity:0.08; background-size:cover; background-position:center;
+        }
+        .hero-content { position:relative; z-index:1; }
+        .chip { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; background:#fff; border:1px solid rgba(0,0,0,0.06); font-weight:700; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
+        .card-soft { border:none; border-radius:18px; box-shadow:0 16px 42px rgba(0,0,0,0.08); background:#fff; padding:22px; }
+        .grid-two { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; }
+    </style>
+
+    <section class="hero-box mb-4">
+        <div class="hero-content d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h1 class="mb-0" th:text="${user.id == null ? 'Pridať používateľa' : 'Editovať používateľa'}"></h1>
+                <div class="chip"><i class="bi bi-people-fill"></i> Admin</div>
+            </div>
+            <p class="mb-0 text-muted">Vyplňte údaje, rolu a prípadne zmeňte heslo.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/admin/users" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Späť</a>
+                <a href="/admin" class="btn btn-outline-dark"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="card-soft">
+        <form th:action="@{/admin/users/save}" th:object="${user}" method="post" class="row g-3">
+            <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger col-12" th:text="${#fields.globalErrors[0]}"></div>
+
+            <input type="hidden" th:field="*{id}">
+
+            <div class="grid-two">
+                <div>
+                    <label for="username" class="form-label">Meno používateľa *</label>
+                    <input type="text" th:field="*{username}" class="form-control" id="username" required minlength="3" maxlength="100">
+                    <div class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+                <div>
+                    <label for="email" class="form-label">Email *</label>
+                    <input type="email" th:field="*{email}" class="form-control" id="email" required maxlength="100">
+                    <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                </div>
+            </div>
+
+            <div class="grid-two">
+                <div>
+                    <label for="address" class="form-label">Adresa *</label>
+                    <input type="text" th:field="*{address}" class="form-control" id="address" required maxlength="255">
+                    <div class="text-danger" th:if="${#fields.hasErrors('address')}" th:errors="*{address}"></div>
+                </div>
+                <div>
+                    <label for="phone" class="form-label">Telefón *</label>
+                    <input type="text" th:field="*{phone}" class="form-control" id="phone" required maxlength="20">
+                    <div class="text-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                </div>
+            </div>
+
+            <div class="grid-two">
+                <div>
+                    <label for="role" class="form-label">Rola *</label>
+                    <select th:field="*{role.id}" class="form-select" id="role" required>
+                        <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name}"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label for="password" class="form-label">Heslo <small class="text-muted">(pri úprave nechajte prázdne, ak nemeníte)</small></label>
+                <input type="password" th:field="*{password}" class="form-control" id="password"
+                       th:placeholder="${user.id == null ? 'Zadajte heslo' : 'Nové heslo (ak chcete zmeniť)'}"
+                       th:required="${user.id == null}" minlength="8">
+                <div class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+            </div>
+
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-success"><i class="bi bi-check2-circle"></i> Uložiť</button>
+                <a href="/admin/users" class="btn btn-secondary"><i class="bi bi-x"></i> Späť</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

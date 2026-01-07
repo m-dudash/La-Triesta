@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Admin Dashboard - La Triesta')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red: #ee435c; --green:#1b9a59; --cream:#fff7eb; }
+        body { background:#f6f5f2; }
+        .admin-hero {
+            background: linear-gradient(135deg, rgba(215,38,61,0.12), rgba(27,154,89,0.16));
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 14px 38px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .admin-hero::after {
+            content:"";
+            position:absolute; inset:0;
+            background-image:url("https://dreamofitaly.com/wp-content/uploads/2024/04/pui-1.png");
+            opacity:0.08; background-size:cover; background-position:center;
+        }
+        .admin-hero-content { position:relative; z-index:1; }
+        .chip {
+            display:inline-flex; align-items:center; gap:8px;
+            padding:8px 12px; border-radius:999px;
+            background:#fff; border:1px solid rgba(0,0,0,0.06); font-weight:700;
+            box-shadow:0 8px 18px rgba(0,0,0,0.08);
+        }
+        .section-title {
+            display:flex; align-items:center; gap:10px;
+            font-weight:800; font-size:1.15rem; margin: 10px 0 14px;
+        }
+        .grid-cards {
+            display:grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap:20px;
+        }
+        .stat-card {
+            position:relative;
+            border:none;
+            border-radius:20px;
+            overflow:hidden;
+            color:#1f1f1f;
+            background:#fff;
+            box-shadow:0 20px 48px rgba(0,0,0,0.1);
+            min-height: 220px;
+            display:flex;
+            flex-direction:column;
+            text-decoration:none;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow:0 24px 60px rgba(0,0,0,0.14);
+        }
+        .stat-card .bg-img {
+            position:absolute; inset:0;
+            opacity:0.16;
+            background-size:cover;
+            background-position:center;
+        }
+        .stat-card .content {
+            position:relative; z-index:1;
+            padding:30px;
+            display:flex;
+            flex-direction:column;
+            gap:10px;
+            height:100%;
+        }
+        .stat-title { display:flex; align-items:center; gap:10px; font-weight:800; }
+        .stat-number { font-size:2.8rem; font-weight:800; margin:0; }
+    </style>
+
+    <section class="admin-hero mb-4">
+        <div class="admin-hero-content d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h1 class="mb-0">Administrátorský panel</h1>
+                <div class="chip"><i class="bi bi-shield-lock"></i> Admin</div>
+            </div>
+            <p class="mb-0 text-muted">Spravujte používateľov, objednávky, prísady, veľkosti a tagy. Prehľadné karty s priamym prístupom.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/" class="btn btn-dark"><i class="bi bi-house-door"></i> Domov</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="mb-3 section-title"><i class="bi bi-people-fill"></i> Používatelia a objednávky</div>
+    <div class="grid-cards mb-4">
+        <a class="stat-card" href="/admin/users">
+            <div class="bg-img" style="background-image:url('https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1200&q=80');"></div>
+            <div class="content">
+                <div class="stat-title"><i class="bi bi-people-fill"></i> Používatelia</div>
+                <p class="stat-number" th:text="${usersCount}">0</p>
+            </div>
+        </a>
+
+        <a class="stat-card" href="/admin/orders">
+            <div class="bg-img" style="background-image:url('https://completebusinessgroup.com/wp-content/uploads/2017/08/orders-post.jpg');"></div>
+            <div class="content">
+                <div class="stat-title"><i class="bi bi-clipboard-check-fill"></i> Objednávky</div>
+                <p class="stat-number" th:text="${ordersCount}">0</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="mb-3 section-title"><i class="bi bi-pie-chart-fill"></i> Obsah a parametre</div>
+    <div class="grid-cards">
+        <a class="stat-card" href="/admin/ingredients">
+            <div class="bg-img" style="background-image:url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80');"></div>
+            <div class="content">
+                <div class="stat-title"><i class="bi bi-basket2-fill"></i> Prísady</div>
+                <p class="stat-number" th:text="${ingredientsCount}">0</p>
+            </div>
+        </a>
+
+        <a class="stat-card" href="/admin/tags">
+            <div class="bg-img" style="background-image:url('https://www.kingarthurbaking.com/sites/default/files/styles/featured_image/public/2024-11/Personal-Pan-Pizzas_Hero1_HOR_BOTW_058.jpg?itok=gAMYi3T9');"></div>
+            <div class="content">
+                <div class="stat-title"><i class="bi bi-tags-fill"></i> Tagy</div>
+                <p class="stat-number" th:text="${tagsCount}">0</p>
+            </div>
+        </a>
+
+        <a class="stat-card" href="/admin/sizes">
+            <div class="bg-img" style="background-image:url('https://images.unsplash.com/photo-1524222717473-730000096953?auto=format&fit=crop&w=1200&q=80');"></div>
+            <div class="content">
+                <div class="stat-title"><i class="bi bi-arrows-angle-expand"></i> Veľkosti</div>
+                <p class="stat-number" th:text="${sizesCount}">0</p>
+            </div>
+        </a>
+
+        <a class="stat-card" href="/admin/pizzas">
+            <div class="bg-img" style="background-image:url('https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80');"></div>
+            <div class="content">
+                <div class="stat-title"><i class="bi bi-pie-chart-fill"></i> Pizze</div>
+                <p class="stat-number" th:text="${pizzasCount}">0</p>
+            </div>
+        </a>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

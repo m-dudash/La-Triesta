@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/header :: head('Pizze - Admin')"></head>
+<body>
+<div th:replace="fragments/header :: siteHeader"></div>
+
+<main class="container py-5">
+    <style>
+        :root { --red:#e5caaf; --green:#1b9a59; --cream:#fff7eb; }
+        body { background:#f6f5f2; }
+        .hero-box {
+            background: linear-gradient(135deg, rgba(215,38,61,0.12), rgba(27,154,89,0.16));
+            border-radius: 20px;
+            padding: 22px;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-box::after {
+            content:""; position:absolute; inset:0;
+            background-image:url("https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=1200&q=80");
+            opacity:0.08; background-size:cover; background-position:center;
+        }
+        .hero-content { position:relative; z-index:1; }
+        .chip { display:inline-flex; align-items:center; gap:8px; padding:7px 12px; border-radius:999px; background:#fff; border:1px solid rgba(0,0,0,0.06); font-weight:700; box-shadow:0 8px 18px rgba(0,0,0,0.08); }
+        .card-soft { border:none; border-radius:18px; box-shadow:0 16px 42px rgba(0,0,0,0.08); background:#fff; padding:18px; }
+        .table-pretty { width:100%; border-collapse: separate; border-spacing: 0 10px; }
+        .table-pretty thead { color:#555; font-size:0.9rem; text-transform:uppercase; letter-spacing:0.04em; }
+        .table-pretty th { border: none; padding: 0.45rem 0.75rem; }
+        .table-pretty tbody tr { background:#fff; box-shadow:0 10px 26px rgba(0,0,0,0.07); border-radius:14px; overflow:hidden; }
+        .table-pretty tbody td { border: none; padding: 0.95rem 0.95rem; vertical-align: middle; }
+        .table-pretty tbody tr:hover { transform: translateY(-2px); box-shadow:0 14px 32px rgba(0,0,0,0.10); transition:.12s; }
+        .thumb { width:56px; height:56px; object-fit:cover; border-radius:12px; box-shadow:0 6px 14px rgba(0,0,0,0.08); }
+        .form-switch .switch-ios {
+            width: 44px; height: 24px;
+            background-color: #c5c5c5;
+            border-radius: 999px;
+            transition: all .2s ease;
+            border: none;
+            box-shadow: inset 0 0 1px rgba(0,0,0,0.2);
+        }
+        .form-switch .switch-ios:checked {
+            background-color: #1b9a59;
+        }
+        .form-switch .switch-ios:focus { box-shadow: none; }
+        .form-switch .switch-ios::before {
+            height: 20px; width: 20px;
+            border-radius: 50%;
+            top: 2px; left: 2px;
+            background: #fff;
+            transition: all .2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        .form-switch .switch-ios:checked::before {
+            transform: translateX(20px);
+        }
+    </style>
+
+    <section class="hero-box mb-4">
+        <div class="hero-content d-flex flex-column gap-2">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <h1 class="mb-0">Pizze</h1>
+                <div class="chip"><i class="bi bi-pie-chart-fill"></i> Admin</div>
+            </div>
+            <p class="mb-0 text-muted">Spravujte ponuku pízz, viditeľnosť a údaje.</p>
+            <div class="d-flex flex-wrap gap-2">
+                <a href="/admin" class="btn btn-outline-secondary"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                <a href="/admin/pizzas/new" class="btn btn-success"><i class="bi bi-plus-lg"></i> Pridať pizzu</a>
+            </div>
+        </div>
+    </section>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+    <div class="card-soft">
+        <div class="table-responsive">
+            <table class="table-pretty mb-0">
+                <thead>
+                <tr>
+                    <th>Obrázok</th>
+                    <th>Názov</th>
+                    <th>Slug</th>
+                    <th>Dostupná</th>
+                    <th class="text-end">Akcie</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="pizza : ${pizzas}">
+                    <td>
+                        <img th:if="${pizza.imageUrl}" th:src="${pizza.imageUrl}" alt="Pizza" class="thumb">
+                        <img th:if="${pizza.imageUrl == null}" src="https://placehold.co/120x120?text=La+Triesta" alt="Pizza" class="thumb">
+                    </td>
+                    <td th:text="${pizza.name}"></td>
+                    <td th:text="${pizza.slug}"></td>
+                    <td>
+                        <form th:action="@{/admin/pizzas/toggle-available/{id}(id=${pizza.id})}" method="post" class="form-switch m-0">
+                            <input type="checkbox" class="form-check-input switch-ios" role="switch"
+                                   th:checked="${pizza.available}"
+                                   onchange="this.form.submit()">
+                        </form>
+                    </td>
+                    <td class="text-end">
+                        <a th:href="@{/admin/pizzas/edit/{id}(id=${pizza.id})}" class="btn btn-sm btn-outline-warning me-1">
+                            <i class="bi bi-pencil"></i> Upraviť
+                        </a>
+                        <form th:action="@{/admin/pizzas/delete/{id}(id=${pizza.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Naozaj natrvalo vymazať?')">
+                                <i class="bi bi-trash"></i> Vymazať
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(pizzas)}">
+                    <td colspan="5" class="text-center text-muted py-4">Žiadne pizze.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div th:replace="fragments/footer :: siteFooter"></div>
+</body>
+</html>

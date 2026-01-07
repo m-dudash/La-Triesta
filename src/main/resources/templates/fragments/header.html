@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${title}">La Triesta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" href="https://png.pngtree.com/png-vector/20241211/ourmid/pngtree-authentic-italian-pizza-with-cheese-and-fresh-vegetable-toppings-png-image_14714611.png" type="image/png">
+    <style>
+        :root {--ui-scale: 0.8; --container-max: 1200px; --red: #ee435c; --green:#1b9a59; --cream:#fff7eb; --cream-dark: #f2e6d9;
+        }
+        html { font-size: calc(16px * var(--ui-scale)); }
+        body { background:#f6f5f2; zoom: var(--ui-scale); }
+        @supports not (zoom: 1) {
+            body {
+                transform: scale(var(--ui-scale));
+                transform-origin: top left;
+                width: calc(100% / var(--ui-scale));
+            }
+        }
+        main { flex: 1 0 auto; }
+        .navbar {
+            background: var(--cream);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.08);
+            padding: 0.1rem 0;
+            overflow: visible;
+        }
+        .navbar-brand {
+            color: #1f1f1f;
+            font-size: 1.65rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 800;
+            letter-spacing: 0.01em;
+        }
+        .navbar-brand img { height: 100px; }
+        .nav-link {
+            color: #1f1f1f !important;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 0.65rem;
+            transition: background .15s ease, color .15s ease;
+        }
+        .nav-link:hover { background: var(--cream-dark) !important; color:#000 !important; }
+        .nav-cta { background: #d7263d; color:#fff !important; }
+        .nav-cta:hover { background: #b61f34; }
+        .nav-cluster { display:flex; gap:8px; align-items:center; padding-left:12px; }
+        .nav-divider { width:1px; height:28px; background:rgba(0,0,0,0.08); margin:0 8px; }
+        .bi { font-size: 1.35rem; font-weight: 700; }  .bell-btn .bi { font-size: 1.45rem; }                            .container { max-width: var(--container-max); }
+        .role-chip {
+            display:inline-flex; align-items:center; gap:8px;
+            padding:8px 14px; border-radius:999px;
+            background: #fff; border:1px solid rgba(0,0,0,0.07);
+            box-shadow:0 6px 16px rgba(0,0,0,0.08);
+            font-weight:700; color:#1f1f1f;
+            text-decoration:none;
+            font-size: 0.95rem;
+        }
+        .role-chip.admin { border-color:#1b9a59; color:#1b9a59; }
+        .role-chip.chef { border-color:#d7263d; color:#d7263d; }
+        .role-chip.courier { border-color:#0d6efd; color:#0d6efd; }
+                .bell-container {
+            position: absolute;
+            right: 120px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .bell-btn {
+            position: relative;
+            border: none;
+            background: transparent;
+            color: #1f1f1f;
+            padding: 8px 12px;
+            border-radius: 10px;
+            transition: background .15s ease;
+        }
+        .bell-btn:hover { background: var(--cream-dark) !important; }
+        .badge-bell {
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(35%, -35%);
+            background: #d7263d;
+            color: #fff;
+        }
+        @media (max-width: 991.98px) {
+            .bell-container { position: static; transform: none; margin-left: auto; }
+        }
+    </style>
+</head>
+
+<body th:fragment="siteHeader">
+<nav class="navbar navbar-expand-lg navbar-light position-relative">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img src="https://i.ibb.co/vRjWzPJ/logo.png" alt="logo" border="0" />
+            <span>La Triesta</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="bell-container" sec:authorize="hasAnyRole('ADMIN','CHEF')"
+             th:with="pendingCount=${@orderService.countPendingOrders()}">
+            <a class="bell-btn d-inline-flex align-items-center"
+               th:href="${#authorization.expression('hasRole(''ADMIN'')') ? '/admin/orders' : '/staff/chef'}"
+               title="Nové objednávky">
+                <i class="bi bi-bell-fill"></i>
+                <span th:if="${pendingCount > 0}" class="badge badge-bell" th:text="${pendingCount}"></span>
+            </a>
+        </div>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <div class="nav-cluster">
+                    <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-house-door-fill"></i> Domov</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/menu"><i class="bi bi-pie-chart-fill"></i> Menu</a></li>
+                </div>
+
+                <div class="nav-divider d-none d-lg-block"></div>
+
+                <div class="nav-cluster">
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/cart"><i class="bi bi-bag-fill"></i> Košík</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/orders/my"><i class="bi bi-clipboard-check-fill"></i> Objednávky</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <a class="nav-link" href="/profile"><i class="bi bi-person-circle"></i> Profil</a>
+                    </li>
+                </div>
+
+                <div class="nav-divider d-none d-lg-block"></div>
+
+                <div class="nav-cluster">
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link nav-cta text-white" th:href="@{/auth/login}"><i class="bi bi-box-arrow-in-right"></i> Prihlásiť</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="!isAuthenticated()">
+                        <a class="nav-link" th:href="@{/auth/register}"><i class="bi bi-person-plus-fill"></i> Registrácia</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/auth/logout}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-link nav-link px-2"><i class="bi bi-box-arrow-right"></i></button>
+                        </form>
+                    </li>
+                </div>
+
+                <div class="nav-divider d-none d-lg-block"></div>
+
+                <div class="nav-cluster">
+                    <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                        <a class="role-chip admin" href="/admin"><i class="bi bi-shield-lock"></i> Admin</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('CHEF')">
+                        <a class="role-chip chef" href="/staff/chef"><i class="bi bi-egg-fried"></i> Kuchár</a>
+                    </li>
+                    <li class="nav-item" sec:authorize="hasRole('COURIER')">
+                        <a class="role-chip courier" href="/staff/courier"><i class="bi bi-truck"></i> Kuriér</a>
+                    </li>
+                </div>
+            </ul>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

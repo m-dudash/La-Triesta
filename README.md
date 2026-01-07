@@ -19,13 +19,13 @@ La Triesta is a platform for managing pizza orders and delivery. It allows custo
 ![Home Page](Screenshots/home.png)
 
 ### Pizza Page
-![Menu Page](screenshots/pizza.png)
+![Menu Page](Screenshots/pizza.png)
 
 ### Admin Page
-![Menu Page](screenshots/admin.png)
+![Menu Page](Screenshots/admin.png)
 
 ### Chef Page
-![Order Summary](screenshots/chef.png)
+![Order Summary](Screenshots/chef.png)
 
 ## Getting Started
 
